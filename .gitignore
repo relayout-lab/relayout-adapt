@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+data/
+outputs/
+runs/
+wandb/
+*.hdf5
+*.mp4
+.env
+.libero/
