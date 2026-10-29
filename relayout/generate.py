@@ -148,6 +148,7 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--repo-id", default="local/redmug_gen")
     ap.add_argument("--attempts", type=int, default=0, help="0 = one attempt per target state")
+    ap.add_argument("--range", help="lo:hi, use only these target states (one generation unit)")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--extra-steps", type=int, default=40)
     ap.add_argument("--place-tol", type=float, default=0.03)
@@ -159,7 +160,10 @@ def main():
     env = sim.make_env()
     sources = load_sources(env, args.hdf5, args.demos, args.source_cache)
     keys = sorted(sources)
-    data = np.load(args.init)
+    data = dict(np.load(args.init))
+    if args.range:
+        lo, hi = map(int, args.range.split(":"))
+        data = {k: data[k][lo:hi] for k in ("ids", "states")}
     n = args.attempts or len(data["ids"])
     rng = np.random.default_rng(args.seed)
     out = Path(args.out)

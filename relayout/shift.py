@@ -5,6 +5,7 @@ stopping a few cm off): the objects keep their arrangement, the robot and camera
 
     python -m relayout.shift --base data/init/std_200.npz --out data/init/shift_grid.npz \
         --radii 0.04 0.08 0.12 --angles 8 --per 20
+    python -m relayout.shift --base data/init/std_200.npz --out data/init/shift_dev.npz --skip 20   # development set
 
 Ids are "r<cm>a<deg>_<base id>" so results can be grouped by offset and paired by base state.
 With --random N, offsets are drawn uniformly in radius (0..--rmax) and angle instead, with ids
@@ -62,7 +63,8 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--radii", type=float, nargs="+", default=[0.04, 0.08, 0.12])
     ap.add_argument("--angles", type=int, default=8)
-    ap.add_argument("--per", type=int, default=20, help="base states per offset (the first N of --base)")
+    ap.add_argument("--per", type=int, default=20, help="base states per offset (the first N of --base after --skip)")
+    ap.add_argument("--skip", type=int, default=0, help="skip the first N base states (for a set disjoint from another)")
     ap.add_argument("--random", type=int, default=0, help="draw N random offsets instead of the grid")
     ap.add_argument("--rmax", type=float, default=0.12)
     ap.add_argument("--seed", type=int, default=0)
@@ -90,7 +92,7 @@ def main():
             offs.append(off.round(4).tolist())
         args.offsets = offs
     for tag, off in ([] if args.random else offsets(args.radii, args.angles)):
-        for i in range(args.per):
+        for i in range(args.skip, args.skip + args.per):
             s, drift, drop = shift_state(env, base["states"][i], off)
             bid = str(base["ids"][i])
             if drift > args.max_drift or drop > args.max_drop:
