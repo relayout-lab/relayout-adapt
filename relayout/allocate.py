@@ -96,7 +96,8 @@ def uniform(stats, budget):
 
 
 def failure(stats, budget):
-    return dict(zip(BINS, largest_remainder([1 - stats[b]["success_rate"] for b in BINS], budget)))
+    # a bin without development trials counts as failing everywhere
+    return dict(zip(BINS, largest_remainder([1 - (stats[b]["success_rate"] or 0) for b in BINS], budget)))
 
 
 PROMPT = """You are allocating a fixed budget of demonstration-generation work for a robot policy.
