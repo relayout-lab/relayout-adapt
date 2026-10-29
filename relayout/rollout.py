@@ -54,7 +54,8 @@ def body_pos(env, name):
     return env.sim.data.body_xpos[env.sim.model.body_name2id(obj.root_body)].copy()
 
 
-def run_episode(env, policy, pre, post, state, max_steps, frames=None):
+def run_episode(env, policy, pre, post, state, max_steps, frames=None, frame_fn=None):
+    """frames: list to collect video frames into; frame_fn(env, obs) -> frame (default sim.human_frame)."""
     obs = sim.reset_to(env, state)
     policy.reset()
     mug0 = body_pos(env, MUG)
@@ -66,7 +67,7 @@ def run_episode(env, policy, pre, post, state, max_steps, frames=None):
         obs, _, done, _ = env.step(action)
         max_lift = max(max_lift, float(body_pos(env, MUG)[2] - mug0[2]))
         if frames is not None:
-            frames.append(sim.human_frame(obs))
+            frames.append(frame_fn(env, obs) if frame_fn else sim.human_frame(obs))
         if done:
             break
     return {
