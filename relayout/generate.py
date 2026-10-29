@@ -87,8 +87,10 @@ def others(env):
     return {n: body_pos(env, n) for n in env.env.objects_dict if n != MUG}
 
 
-def attempt(env, src, state, args):
-    """Run one conversion from a target initial state. Returns (frames, info)."""
+def attempt(env, src, state, args, frame_fn=None, video=None):
+    """Run one conversion from a target initial state. Returns (frames, info).
+
+    frame_fn(env, obs) / video: optionally also collect a rendered frame per step (for videos)."""
     obs = sim.reset_to(env, state)
     mug, plate = body_pos(env, MUG), body_pos(env, PLATE)
     mug_off, plate_off = (mug - src["mug0"])[:2], (plate - src["plate0"])[:2]
@@ -103,6 +105,8 @@ def attempt(env, src, state, args):
             a[:6] = np.clip((target - obs["robot0_eef_pos"]) / POS_SCALE, -1, 1).tolist() + [0, 0, 0]
         frames.append({**sim.policy_obs(obs), "action": a})
         obs, _, done, _ = env.step(a)
+        if video is not None:
+            video.append(frame_fn(env, obs))
         if done:
             break
     mug_end, plate_end = body_pos(env, MUG), body_pos(env, PLATE)
