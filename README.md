@@ -152,3 +152,7 @@ python -m relayout.record --policy outputs/ft_gen_s1/checkpoints/last/pretrained
 - [LIBERO](https://github.com/Lifelong-Robot-Learning/LIBERO)（シミュレータと LIBERO-90 の公式デモ）
 - [LeRobot](https://github.com/huggingface/lerobot)（ACT の学習）
 - 変換の考え方は MimicGen（Mandlekar et al., CoRL 2023）を簡略にしたもの（物を基準にした区間の変換と、成功したものだけの採用）
+
+## ライセンス
+
+MIT（`LICENSE`）。LIBERO の公式デモ・素材と LeRobot は、それぞれのライセンスに従う（このリポジトリには含めない）。
