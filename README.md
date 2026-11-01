@@ -50,6 +50,18 @@ bash scripts/run.sh alloc           # 挑戦：生成予算の配分の比較（
 `SEEDS`・`WORKERS`（評価の並列数）・`AGENT`（配分を決めるコマンド）は環境変数で変えられる。
 上の結果のエージェントは `AGENT="claude -p --model claude-opus-5-5"`（1 回の呼び出し、ツールなし）。そのときの入力・出力・配分は `results/alloc/` にある。
 
+## 解析
+
+`run.sh alloc` の後に回す。結果は `outputs/analysis/` に出る。
+
+```bash
+python -m analysis.agent_review    # エージェントの配分の検証（理由の事実確認、見込みと実際の生成数、区間ごとの成功率）
+python -m analysis.gen_probe       # 2 回目の生成をやり直し、関節の余裕・特異値・接触を 1 step ごとに記録
+python -m analysis.policy_elbow    # ③ の方策で、ひじが可動域の端に当たるか
+python -m analysis.elbow_summary   # 上の 2 つを、ロボット側の区間と遠い区間で集計
+python -m analysis.render_elbow    # 掴む瞬間を横から見た図
+```
+
 ## 構成
 
 | ファイル | 内容 |
@@ -60,6 +72,7 @@ bash scripts/run.sh alloc           # 挑戦：生成予算の配分の比較（
 | `relayout/allocate.py` | 生成予算の配分（均等・失敗率比例・エージェント） |
 | `relayout/record.py` | 動画用の録画 |
 | `results/alloc/` | 上の結果でエージェントに渡した入力と、返った配分・理由 |
+| `analysis/` | エージェントの配分の検証と、ロボット側で伸びない原因（ひじの可動域）の解析 |
 | `scripts/run.sh` | 実験を段階ごとに回す |
 | `scripts/abci/` | 計算機クラスタ（PBS）用のジョブ。実験の大半はこれで回した |
 
