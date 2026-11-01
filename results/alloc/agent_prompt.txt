@@ -1,0 +1,46 @@
+You are allocating a fixed budget of demonstration-generation work for a robot policy.
+
+Task: a robot arm picks up a red mug and puts it on a plate (LIBERO simulation). All objects on the
+table can be shifted together by an offset from the standard layout. An ACT policy was fine-tuned on
+358 converted demonstrations spread uniformly over offsets 0-12 cm. It still fails in some
+regions. We will generate more demonstrations by converting the original demos to new layouts and
+fine-tune again. Your job is only to decide how many generation units go to each offset bin.
+
+Bins: "r<radius cm>a<direction deg>"; radius bins 4, 8, 12 cover 2-6, 6-10, 10-12 cm; directions every 45 deg
+(+-22.5 deg; 0 deg = +x, 90 deg = +y). One unit = 10 generation attempts in that bin; only
+attempts that succeed in simulation become training demos (see the round-1 acceptance rate).
+Total budget: exactly 48 units, non-negative integers, every bin listed (0 allowed).
+
+Per-bin numbers (policy evaluated on a development set, 3 seeds pooled; round-1 generation):
+bin	success_rate	trials	fail_not_lifted	fail_lifted	fail_lifted_median_mug_to_plate_cm	gen_accept_rate
+r4a0	0.767	60	2	12	3.8	1.0
+r4a45	0.683	60	2	17	3.9	0.944
+r4a90	0.783	60	0	13	3.5	0.947
+r4a135	0.717	60	1	16	3.4	0.8
+r4a180	0.8	60	1	11	4.6	0.952
+r4a225	0.633	60	1	21	4.2	0.889
+r4a270	0.783	60	0	13	3.4	1.0
+r4a315	0.7	60	0	18	3.9	0.882
+r8a0	0.767	60	5	9	3.6	1.0
+r8a45	0.617	60	7	16	3.6	0.917
+r8a90	0.817	60	5	6	4.4	0.941
+r8a135	0.717	60	4	13	4.2	0.824
+r8a180	0.433	60	27	7	7.2	0.842
+r8a225	0.617	60	9	14	4.2	0.737
+r8a270	0.55	60	5	22	4.0	0.889
+r8a315	0.7	60	0	18	4.0	0.917
+r12a0	0.667	60	7	13	3.7	1.0
+r12a45	0.783	60	5	8	4.7	1.0
+r12a90	0.783	60	0	13	3.9	1.0
+r12a135	0.667	60	1	19	5.1	0.833
+r12a180	0.067	60	54	2	14.1	0.667
+r12a225	0.283	60	33	10	12.4	0.417
+r12a270	0.35	60	26	13	4.2	1.0
+r12a315	0.55	60	10	17	3.9	0.9
+
+Columns: success_rate = policy success; fail_not_lifted / fail_lifted = failures before / after
+lifting the mug; fail_lifted_median_mug_to_plate_cm = for lifted failures, final mug-to-plate
+distance; gen_accept_rate = share of round-1 generation attempts accepted in that bin.
+
+Reply with one JSON object and nothing else:
+{"allocation": {"<bin>": <units>, ...}, "reasoning": "<2-4 sentences>"}
